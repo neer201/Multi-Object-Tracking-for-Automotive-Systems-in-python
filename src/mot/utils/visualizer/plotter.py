@@ -1,14 +1,16 @@
+import logging
 from typing import List, Union
-import matplotlib.pyplot as plt
-from mot.utils.visualizer.common.common import set_mpl_params, create_figure
 
-set_mpl_params()
+import matplotlib.pyplot as plt
 import numpy as np
+
 from mot.simulator import MeasurementData, ObjectData
 from mot.utils.visualizer.common.autoscale import autoscale
+from mot.utils.visualizer.common.common import create_figure, set_mpl_params
+from mot.utils.visualizer.common.plot_series import plot_series
 
-from .common.plot_series import plot_series
-import logging
+
+set_mpl_params()
 
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
@@ -22,9 +24,9 @@ class Plot:
         show=False,
         is_autoscale=True,
         autoscale_margin=1.0,
-        lim_x=(-1000, 1000),
-        lim_y=(-1000, 1000),
-        **kwargs
+        lim_x=(-1100, 1100),
+        lim_y=(-1100, 1100),
+        **kwargs,
     ):
         set_mpl_params()
         if ax is None:
@@ -64,7 +66,7 @@ class Plotter:
         show=False,
         is_autoscale=False,
         *args,
-        **kwargs
+        **kwargs,
     ):
         assert isinstance(data, list)
 
@@ -75,7 +77,7 @@ class Plotter:
             show=show,
             autoscale_margin=100.0,
             is_autoscale=is_autoscale,
-            **kwargs
+            **kwargs,
         ) as p:
             for series in data:
                 plot_series(series, p.ax)
@@ -89,16 +91,9 @@ class Plotter:
         out_path=None,
         show=False,
         *args,
-        **kwargs
+        **kwargs,
     ):
 
-        with Plot(
-            ax=ax,
-            title=title,
-            out_path=out_path,
-            show=show,
-            autoscale_margin=0.1,
-            **kwargs
-        ) as p:
+        with Plot(ax=ax, title=title, out_path=out_path, show=show, autoscale_margin=0.1, **kwargs) as p:
             plot_series(data, p.ax)
         return p.ax

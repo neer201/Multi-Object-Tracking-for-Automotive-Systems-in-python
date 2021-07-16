@@ -1,6 +1,6 @@
 [flake8]
-extend-ignore = E203, S101
-max-line-length = 99
+extend-ignore = E203, S101, I201, I101, I100
+max-line-length = 120
 show-source = true
 statistics = true
 inline-quotes = "

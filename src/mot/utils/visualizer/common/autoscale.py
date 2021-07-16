@@ -23,8 +23,8 @@ def autoscale(ax, axis="y", margin=10.0):
             fixed, dependent = y, x
 
         low, high = calculate_new_limit(fixed, dependent, lim)
-        newlow = low if low < newlow else newlow
-        newhigh = high if high > newhigh else newhigh
+        newlow = int(low if low < newlow else newlow)
+        newhigh = int(high if high > newhigh else newhigh)
 
         margin = margin * (newhigh - newlow)
         setlim(newlow - margin, newhigh + margin)

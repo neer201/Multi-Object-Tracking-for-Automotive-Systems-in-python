@@ -1,12 +1,14 @@
+import logging
 from functools import singledispatch
 
+import colorcet
 import numpy as np
+from matplotlib.lines import Line2D
+
 from mot.common.state import Gaussian
 from mot.simulator import MeasurementData, ObjectData
 from mot.utils.visualizer.common.plot_primitives import BasicPlotter
 
-from matplotlib.lines import Line2D
-import colorcet
 
 CLUTTER_COLOR = colorcet.glasbey_category10[3]  # red
 CLUTTER_MARKER = "+"
@@ -14,7 +16,6 @@ OBJECT_COLORS = colorcet.glasbey_category10[4:]
 OBJECT_MARKER = "s"
 OBJECT_MEASUREMENT_MARKER = "o"
 OBJECT_MEASUREMENT_COLOR = "b"
-import logging
 
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
@@ -88,9 +89,7 @@ def _plot_series(series: ObjectData, ax, *args, **kwargs):
             for object_id in range(series._ground_truth_config.n_births)
         ]
     )
-    lgd = ax.legend(
-        handles=legend_elements, loc="center left", bbox_to_anchor=(1, 0.815)
-    )
+    lgd = ax.legend(handles=legend_elements, loc="best", bbox_to_anchor=(1, 0.815))  # noqa
     return ax
 
 
@@ -100,12 +99,8 @@ def __plot_series(series: MeasurementData, ax, *args, **kwargs):
         plot_measurement_scene(ax, series, timestep)
 
     legend_elements, labels = ax.get_legend_handles_labels()
-    legend_elements.append(
-        Line2D([0], [0], marker=CLUTTER_MARKER, color=CLUTTER_COLOR, label="clutter")
-    )
-    lgd = ax.legend(
-        handles=legend_elements, loc="center left", bbox_to_anchor=(1, 0.815)
-    )
+    legend_elements.append(Line2D([0], [0], marker=CLUTTER_MARKER, color=CLUTTER_COLOR, label="clutter"))
+    lgd = ax.legend(handles=legend_elements, loc="best", bbox_to_anchor=(1, 0.815))  # noqa
     return ax
 
 
@@ -118,22 +113,21 @@ def ___plot_series(series: list, ax, *args, **kwargs):
                 ax.add_artist(patch)
 
         elif isinstance(scene, np.ndarray):
-            ax.add_artist(
-                BasicPlotter.plot_point(
-                    x=scene.squeeze()[0],
-                    y=scene.squeeze()[1],
-                    ax=ax,
-                    color="r",
-                    marker="x",
+            if len(scene) > 0:
+                ax.add_artist(
+                    BasicPlotter.plot_point(
+                        x=scene.squeeze()[0],
+                        y=scene.squeeze()[1],
+                        ax=ax,
+                        color="r",
+                        marker="x",
+                    )
                 )
-            )
         elif isinstance(scene, list):
             if scene:
                 for curr_object in scene:
                     if isinstance(curr_object, Gaussian):
-                        for patch in BasicPlotter.plot_state(
-                            curr_object, ax=ax, color="m"
-                        ):
+                        for patch in BasicPlotter.plot_state(curr_object, ax=ax, color="m"):
                             ax.add_artist(patch)
     return ax
 
@@ -157,6 +151,7 @@ def ___plot_series(series: list, ax, *args, **kwargs):
 @plot_series.register(np.ndarray)
 def ____plot_series(series: np.ndarray, ax, *args, **kwargs):
     for timestep in range(len(series)):
-        state = series[timestep]
-        ax.add_artist(BasicPlotter.plot_point(x=state[0], y=state[1], ax=ax, color="m"))
+        states = series[timestep]
+        for state in states:
+            ax.add_artist(BasicPlotter.plot_point(x=state[0], y=state[1], ax=ax, color="m"))
     return ax

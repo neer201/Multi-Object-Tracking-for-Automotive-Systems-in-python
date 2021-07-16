@@ -21,15 +21,27 @@ pdbpp = "^0.10.2"
 murty = {git = "https://github.com/neer201/murty.git"}
 seaborn = "^0.11.1"
 jupyter-contrib-nbextensions = "^0.5.1"
+motmetrics = "1.1.3"
+nuscenes-devkit = "^1.1.3"
+joblib = "^1.0.1"
+pathos = "^0.2.7"
+pycycle = "^0.0.8"
+black = "^21.4b2"
+nox = "^2020.12.31"
+pre-commit = "^2.12.1"
+ujson = "^4.0.2"
+isort = "^5.8.0"
+argcomplete = "^1.12.3"
+pyquaternion = "^0.9.9"
+pycallgraph = "^1.0.1"
+debugpy = "^1.3.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"
 flake8 = "^3.8.4"
-black = "^20.8b1"
 flake8-bandit = "^2.1.2"
 flake8-black = "^0.2.1"
 flake8-bugbear = "^20.11.1"
-flake8-import-order = "^0.18.1"
 mypy = "^0.800"
 ipdb = "^0.13.4"
 coverage = "^5.4"
@@ -37,6 +49,15 @@ pytest-cov = "^2.11.1"
 yapf = "^0.30.0"
 autoflake = "^1.4"
 rope = "^0.18.0"
+gprof2dot = "^2021.2.21"
+snakeviz = "^2.1.0"
+functiontrace = "^0.3.4"
+viztracer = "^0.12.3"
+vulture = "^2.3"
+isort = "^5.8.0"
+flake8-isort = "^4.0.0"
+pyrasite = "^2.0"
+line-profiler = "^3.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -54,12 +75,22 @@ show_missing = true
 
 [tool.pytest.ini_options]
 log_cli = true
-log_cli_level = "DEBUG"
+log_cli_level = "INFO"
 log_cli_format = "%(message)s "
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 # docstring check
 
-[tool.yapf]
-based_on_style = "pep8"
-split_before_logical_operator = true
-column_limit = 300
+[tool.black] 
+# https://black.readthedocs.io/en/stable/pyproject_toml.html#configuration-format
+# https://black.readthedocs.io/en/stable/compatible_configs.html
+line-length = 120
+multi_line_output = 3
+include_trailing_comma = true
+use_parentheses = false
+force_grid_wrap = 0
+target-version = ['py37']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+lines_after_imports = 2 

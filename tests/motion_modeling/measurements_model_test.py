@@ -6,7 +6,7 @@ from mot.measurement_models import ConstantVelocityMeasurementModel
 class Test_MotionModels(unittest.TestCase):
     def test_constant_velocity_motion_model(self):
         sigma_r = 10.0
-        meas_model = ConstantVelocityMeasurementModel(sigma_r=sigma_r)
+        meas_model = ConstantVelocityMeasurementModel(sigma_r=sigma_r)  # noqa F841
         raise NotImplementedError
         # TODO: write test
 

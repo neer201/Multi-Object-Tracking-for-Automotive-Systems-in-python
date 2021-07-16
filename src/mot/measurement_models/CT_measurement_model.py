@@ -1,5 +1,6 @@
 import numpy as np
-from mot.measurement_models import MeasurementModel
+
+from .base_measurement_model import MeasurementModel
 
 
 class CoordinateTurnMeasurementModel(MeasurementModel):

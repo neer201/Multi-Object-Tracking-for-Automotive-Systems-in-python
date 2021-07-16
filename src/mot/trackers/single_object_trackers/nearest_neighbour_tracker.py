@@ -1,11 +1,11 @@
 import numpy as np
 
-from .base_single_object_tracker import SingleObjectTracker
+from mot.common.gaussian_density import GaussianDensity
+from mot.common.state import Gaussian
+from mot.configs import SensorModelConfig
 from mot.measurement_models import MeasurementModel
 from mot.motion_models import MotionModel
-from mot.configs import SensorModelConfig
-from mot.common.state import Gaussian
-from mot.common.gaussian_density import GaussianDensity
+from .base_single_object_tracker import SingleObjectTracker
 
 
 class NearestNeighbourTracker(SingleObjectTracker):
@@ -50,14 +50,10 @@ class NearestNeighbourTracker(SingleObjectTracker):
                 predicted_state=prev_state,
                 current_measurements=np.array(measurements_in_scene),
             )
-            prev_state = GaussianDensity.predict(
-                state=estimations[timestep], motion_model=self.motion_model
-            )
+            prev_state = GaussianDensity.predict(state=estimations[timestep], motion_model=self.motion_model, dt=1.0)
         return tuple(estimations)
 
-    def estimation_step(
-        self, predicted_state: Gaussian, current_measurements: np.ndarray
-    ):
+    def estimation_step(self, predicted_state: Gaussian, current_measurements: np.ndarray):
         # 1. Gating
 
         (meas_in_gate, _) = GaussianDensity.ellipsoidal_gating(
@@ -72,7 +68,7 @@ class NearestNeighbourTracker(SingleObjectTracker):
         else:
             # 2. Calculate the predicted likelihood for each measurement in the gate
 
-            predicted_likelihood = GaussianDensity.predicted_likelihood(
+            predicted_likelihood = GaussianDensity.predict_loglikelihood(
                 state_pred=predicted_state,
                 z=meas_in_gate,
                 measurement_model=self.meas_model,
@@ -80,9 +76,7 @@ class NearestNeighbourTracker(SingleObjectTracker):
 
             # Hypothesis evaluation
             # detection
-            w_theta_factor = np.log(
-                self.sensor_model.P_D / self.sensor_model.intensity_c
-            )
+            w_theta_factor = np.log(self.sensor_model.P_D / self.sensor_model.intensity_c)
             w_theta_k = predicted_likelihood + w_theta_factor
             # misdetection
             w_theta_0 = 1 - self.sensor_model.P_D

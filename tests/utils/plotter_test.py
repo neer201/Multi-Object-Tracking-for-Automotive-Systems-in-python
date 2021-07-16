@@ -1,21 +1,18 @@
-from mot.utils.get_path import get_images_dir
-
 from collections import namedtuple
 from dataclasses import asdict
+
 import numpy as np
 import pytest
+
+from mot.common.state import Gaussian
 from mot.configs import GroundTruthConfig, SensorModelConfig
 from mot.measurement_models import ConstantVelocityMeasurementModel
 from mot.motion_models import ConstantVelocityMotionModel
 from mot.scenarios.scenario_configs import linear_full_mot
-from mot.simulator import MeasurementData
-from mot.simulator.measurement_data_generator import MeasurementData
-from mot.simulator.object_data_generator import ObjectData
+from mot.simulator import MeasurementData, ObjectData
 from mot.utils.get_path import get_images_dir
-from mot.trackers.multiple_object_trackers.gm_phd import GMPHD
-from mot.common.state import Gaussian, WeightedGaussian, GaussianMixture
-from mot.configs.object_config import Object
-from mot.utils.visualizer import Plotter, Animator
+from mot.utils.visualizer import Animator, Plotter
+
 
 test_env_cases = [
     (
@@ -33,12 +30,8 @@ def generate_environment(config, motion_model, meas_model, *args, **kwargs):
     motion_model = motion_model(**config)
     sensor_model = SensorModelConfig(**config)
     meas_model = meas_model(**config)
-    object_data = ObjectData(
-        ground_truth_config=ground_truth, motion_model=motion_model, if_noisy=False
-    )
-    meas_data = MeasurementData(
-        object_data=object_data, sensor_model=sensor_model, meas_model=meas_model
-    )
+    object_data = ObjectData(ground_truth_config=ground_truth, motion_model=motion_model, if_noisy=False)
+    meas_data = MeasurementData(object_data=object_data, sensor_model=sensor_model, meas_model=meas_model)
     estimations = [
         [
             Gaussian(x=pos, P=400 * np.eye(4))

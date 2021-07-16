@@ -3,6 +3,7 @@ import numpy as np
 from mot.common.state import Gaussian
 from mot.configs import Object
 
+
 linear_sot_object_life_params = [
     Object(
         initial=Gaussian(x=np.array([0.0, 0.0, 10.0, 10.0]), P=np.eye(4)),
@@ -15,9 +16,7 @@ nonlinear_sot_object_life_params = [
     Object(
         initial=Gaussian(
             x=np.array([0.0, 0.0, 10.0, 0.0, np.pi / 180.0]),
-            P=np.diag(
-                np.power([1.0, 1.0, 1.0, 1.0 * np.pi / 180.0, 1 * np.pi / 180], 2)
-            ),
+            P=np.diag(np.power([1.0, 1.0, 1.0, 1.0 * np.pi / 180.0, 1 * np.pi / 180], 2)),
         ),
         t_birth=0,
         t_death=400,
@@ -54,35 +53,25 @@ linear_n_mot_object_life_params = [
 
 # non-linear state vector (X-pos, Y-pos, velocity, heading, turn-rate)
 
-default_nonlinear_P = np.diag(
-    np.power([1e2, 1e2, 1e1, 1.0 * np.pi / 180.0, 1 * np.pi / 180], 2)
-)
+default_nonlinear_P = np.diag(np.power([1e2, 1e2, 1e1, 1.0 * np.pi / 180.0, 1 * np.pi / 180], 2))
 nonlinear_n_mot_object_life_params = [
     Object(
-        initial=Gaussian(
-            x=np.array([0.0, 0.0, 5.0, 0.0, np.pi / 180]), P=default_nonlinear_P
-        ),
+        initial=Gaussian(x=np.array([0.0, 0.0, 5.0, 0.0, np.pi / 180]), P=default_nonlinear_P),
         t_birth=0,
         t_death=99,
     ),
     Object(
-        initial=Gaussian(
-            x=np.array([20.0, -20.0, -20.0, 0.0, np.pi / 90]), P=default_nonlinear_P
-        ),
+        initial=Gaussian(x=np.array([20.0, -20.0, -20.0, 0.0, np.pi / 90]), P=default_nonlinear_P),
         t_birth=0,
         t_death=99,
     ),
     Object(
-        initial=Gaussian(
-            x=np.array([-20.0, 10.0, -10.0, 0.0, np.pi / 360]), P=default_nonlinear_P
-        ),
+        initial=Gaussian(x=np.array([-20.0, 10.0, -10.0, 0.0, np.pi / 360]), P=default_nonlinear_P),
         t_birth=0,
         t_death=99,
     ),
     Object(
-        initial=Gaussian(
-            x=np.array([-10.0, 10.0, 8.0, 0.0, np.pi / 270]), P=default_nonlinear_P
-        ),
+        initial=Gaussian(x=np.array([-10.0, 10.0, 8.0, 0.0, np.pi / 270]), P=default_nonlinear_P),
         t_birth=0,
         t_death=99,
     ),

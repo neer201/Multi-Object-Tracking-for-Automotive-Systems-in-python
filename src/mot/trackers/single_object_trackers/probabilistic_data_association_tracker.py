@@ -1,17 +1,16 @@
-from .base_single_object_tracker import SingleObjectTracker
-from mot.common.normalize_log_weights import normalize_log_weights
-from mot.common.gaussian_density import GaussianDensity
-from mot.common.hypothesis_reduction import Hypothesisreduction
 import numpy as np
-from mot.common.state import Gaussian
-from mot.common.gaussian_density import GaussianDensity
-from mot.common.state import Gaussian
-from mot.configs import SensorModelConfig
-from mot.measurement_models import (
-    MeasurementModel,
+
+from mot.common import (
+    Gaussian,
+    GaussianDensity,
+    HypothesisReduction,
+    normalize_log_weights,
 )
-from mot.motion_models import (
-    MotionModel,
+from mot.configs import SensorModelConfig
+from mot.measurement_models import MeasurementModel
+from mot.motion_models import MotionModel
+from mot.trackers.single_object_trackers.base_single_object_tracker import (
+    SingleObjectTracker,
 )
 
 
@@ -58,14 +57,10 @@ class ProbabilisticDataAssociationTracker(SingleObjectTracker):
                 predicted_state=prev_state,
                 current_measurements=np.array(measurements_in_scene),
             )
-            prev_state = GaussianDensity.predict(
-                state=estimations[timestep], motion_model=self.motion_model
-            )
+            prev_state = GaussianDensity.predict(state=estimations[timestep], motion_model=self.motion_model)
         return tuple(estimations)
 
-    def estimation_step(
-        self, predicted_state: Gaussian, current_measurements: np.ndarray
-    ):
+    def estimation_step(self, predicted_state: Gaussian, current_measurements: np.ndarray):
         # 1. Gating
         (meas_in_gate, _) = GaussianDensity.ellipsoidal_gating(
             state_prev=predicted_state,
@@ -96,16 +91,14 @@ class ProbabilisticDataAssociationTracker(SingleObjectTracker):
 
             # Hypothesis evaluation
             # detection
-            w_theta_factor = np.log(
-                self.sensor_model.P_D / self.sensor_model.intensity_c
-            )
+            w_theta_factor = np.log(self.sensor_model.P_D / self.sensor_model.intensity_c)
             w_theta_k = predicted_likelihood + w_theta_factor
             # misdetection
             w_theta_0 = 1 - self.sensor_model.P_D
 
             hypotheses_weights_log = [np.log(w_theta_0), w_theta_k]
             log_w, log_sum_ = normalize_log_weights(hypotheses_weights_log)
-            hypotheses_weight_log, multi_hypotheses = Hypothesisreduction.prune(
+            hypotheses_weight_log, multi_hypotheses = HypothesisReduction.prune(
                 hypotheses_weights=log_w,
                 multi_hypotheses=multi_hypotheses,
                 threshold=self.w_min,
@@ -113,9 +106,7 @@ class ProbabilisticDataAssociationTracker(SingleObjectTracker):
 
             log_w, log_sum_ = normalize_log_weights(hypotheses_weights_log)
             # def moment_matching(weights: List[float], states: List[Gaussian]) -> Gaussian:
-            current_step_state = GaussianDensity.moment_matching(
-                weights=log_w, states=multi_hypotheses
-            )
+            current_step_state = GaussianDensity.moment_matching(weights=log_w, states=multi_hypotheses)
 
         estimation = current_step_state
         return estimation

@@ -1,13 +1,13 @@
-import numpy as np
 from typing import List
-from mot.common.gaussian_density import GaussianDensity
+
+import numpy as np
+
+from .gaussian_density import GaussianDensity
 
 
-class Hypothesisreduction:
+class HypothesisReduction:
     @staticmethod
-    def prune(
-        hypotheses_weights: List[float], multi_hypotheses: List, threshold: float
-    ):
+    def prune(hypotheses_weights: List[float], multi_hypotheses: List, threshold: float):
         """Prunes hypotheses with small weights
 
         Parameters
@@ -58,9 +58,7 @@ class Hypothesisreduction:
         return new_hypotheses_weights.tolist(), new_multi_hypotheses.tolist()
 
     @staticmethod
-    def merge(
-        hypotheses_weights: List[float], multi_hypotheses: List, threshold: float
-    ):
+    def merge(hypotheses_weights: List[float], multi_hypotheses: List, threshold: float):
         """Merges hypotheses with small Mahalanobis distance
 
         Parameters
@@ -84,7 +82,5 @@ class Hypothesisreduction:
         (
             new_hypotheses_weights,
             new_multi_hypotheses,
-        ) = GaussianDensity.mixture_reduction(
-            weights=hypotheses_weights, states=multi_hypotheses, threshold=threshold
-        )
+        ) = GaussianDensity.mixture_reduction(weights=hypotheses_weights, states=multi_hypotheses, threshold=threshold)
         return new_hypotheses_weights, new_multi_hypotheses

@@ -1,0 +1,6 @@
+# nuscenes split set - refer to https://github.com/nutonomy/nuscenes-devkit/blob/master/python-sdk/nuscenes/utils/splits.py
+nuscenes_split_set: 'mini_val'
+# detections saved in nuscenes submission format
+detection_file: './data/nuscenes/detection-megvii/megvii_val.json'
+# nuscenes dataset type: mini or trainval
+nuscenes_dataset_version: 'v1.0-mini'

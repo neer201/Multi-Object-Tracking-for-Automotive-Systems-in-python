@@ -1,21 +1,15 @@
 from dataclasses import asdict
 
 import pytest
+
 from mot.configs import GroundTruthConfig, SensorModelConfig
-from mot.measurement_models import (
-    ConstantVelocityMeasurementModel,
-)
+from mot.measurement_models import ConstantVelocityMeasurementModel
 from mot.motion_models import ConstantVelocityMotionModel
-from mot.scenarios.scenario_configs import (
-    linear_n_mot,
-)
+from mot.scenarios.initial_conditions import linear_n_mot_object_life_params
+from mot.scenarios.scenario_configs import linear_n_mot
 from mot.simulator import MeasurementData
-from mot.simulator.measurement_data_generator import MeasurementData
 from mot.simulator.object_data_generator import ObjectData
 from mot.trackers.n_object_trackers import GlobalNearestNeighboursTracker
-from mot.scenarios.initial_conditions import linear_n_mot_object_life_params
-from mot.utils.get_path import get_images_dir
-from mot.utils.visualizer import Plotter
 
 
 @pytest.mark.parametrize(
@@ -38,21 +32,15 @@ from mot.utils.visualizer import Plotter
     ],
 )
 @pytest.mark.parametrize("tracker", [(GlobalNearestNeighboursTracker)])
-def test_tracker(
-    config, motion_model, meas_model, name, tracker, tracker_initial_states
-):
+def test_tracker(config, motion_model, meas_model, name, tracker, tracker_initial_states):
     config = asdict(config)
     ground_truth = GroundTruthConfig(**config)
     motion_model = motion_model(**config)
     sensor_model = SensorModelConfig(**config)
     meas_model = meas_model(**config)
 
-    object_data = ObjectData(
-        ground_truth_config=ground_truth, motion_model=motion_model, if_noisy=False
-    )
-    meas_data = MeasurementData(
-        object_data=object_data, sensor_model=sensor_model, meas_model=meas_model
-    )
+    object_data = ObjectData(ground_truth_config=ground_truth, motion_model=motion_model, if_noisy=False)
+    meas_data = MeasurementData(object_data=object_data, sensor_model=sensor_model, meas_model=meas_model)
 
     # Single object tracker parameter setting
     P_G = 0.99  # gating size in percentage
@@ -70,9 +58,7 @@ def test_tracker(
         M=M,
     )
 
-    tracker_estimations = tracker.estimate(
-        initial_states=tracker_initial_states, measurements=meas_data
-    )
+    tracker_estimations = tracker.estimate(initial_states=tracker_initial_states, measurements=meas_data)  # noqa F841
 
     # Plotter.plot(
     #     [meas_data, object_data],

@@ -1,0 +1,1 @@
+wget https://www.nuscenes.org/data/detection-megvii.zip && unzip detection-megvii.zip

@@ -6,10 +6,10 @@ class MotionModel:
         self._generator = np.random.RandomState(random_state)
 
     def f(self, state_vector):
-        raise NotImplemented
+        raise NotImplementedError
 
     def move(self, params):
-        raise NotImplemented
+        raise NotImplementedError
 
     def __repr__(self) -> str:
-        raise NotImplemented
+        raise NotImplementedError

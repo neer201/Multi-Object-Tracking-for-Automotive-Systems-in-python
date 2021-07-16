@@ -1,7 +1,7 @@
 import numpy as np
 
 from mot.common.state import Gaussian
-from .base_motion_model import MotionModel
+from mot.motion_models import MotionModel
 
 
 class ConstantVelocityMotionModel(MotionModel):
@@ -41,9 +41,7 @@ class ConstantVelocityMotionModel(MotionModel):
     def Q(self, dt):
         return self._get_motion_noise_covariance(dt=dt, sigma=self.sigma)
 
-    def move(
-        self, state: Gaussian, dt: float = None, if_noisy: bool = False
-    ) -> Gaussian:
+    def move(self, state: Gaussian, dt: float = None, if_noisy: bool = False) -> Gaussian:
         dt = self.dt if dt is None else dt
         assert isinstance(dt, float)
         assert isinstance(state, Gaussian), f"Argument of wrong type! Type ={type}"
@@ -93,6 +91,4 @@ class ConstantVelocityMotionModel(MotionModel):
         return Q
 
     def __repr__(self) -> str:
-        return (
-            f"Constant velocity motion model with dt = {self.dt} siqma = {self.sigma} "
-        )
+        return f"Constant velocity motion model with dt = {self.dt} siqma = {self.sigma} "

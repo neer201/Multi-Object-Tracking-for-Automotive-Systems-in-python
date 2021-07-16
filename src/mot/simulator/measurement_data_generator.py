@@ -1,7 +1,4 @@
 import numpy as np
-from mot.configs import SensorModelConfig
-from mot.measurement_models import MeasurementModel
-from mot.simulator.object_data_generator import ObjectData
 
 
 class MeasurementData:
@@ -9,9 +6,9 @@ class MeasurementData:
 
     def __init__(
         self,
-        object_data: ObjectData,
-        sensor_model: SensorModelConfig,
-        meas_model: MeasurementModel,
+        object_data,
+        sensor_model,
+        meas_model,
         random_state=None,
     ):
         """Generates object generated measurement and clutter
@@ -44,15 +41,10 @@ class MeasurementData:
         for timestep in range(len(self.object_data)):
             number_of_objects_in_scene = self.object_data.N[timestep]
             if number_of_objects_in_scene > 0:
-                detection_mask = (
-                    self._generator.uniform(size=number_of_objects_in_scene)
-                    < self.sensor_model.P_D
-                )
+                detection_mask = self._generator.uniform(size=number_of_objects_in_scene) < self.sensor_model.P_D
                 observed_objects = [
                     self.object_data[timestep][key]
-                    for is_observed, key in zip(
-                        detection_mask, self.object_data[timestep].keys()
-                    )
+                    for is_observed, key in zip(detection_mask, self.object_data[timestep].keys())
                     if is_observed
                 ]
                 # Generate measurement
@@ -96,9 +88,7 @@ class MeasurementData:
     @property
     def _observed_measurements(self):
         measurements_with_clutter = []
-        for idx, (curr_measurements, curr_clutters) in enumerate(
-            zip(self.meas_data, self.clutter_data)
-        ):
+        for _idx, (curr_measurements, curr_clutters) in enumerate(zip(self.meas_data, self.clutter_data)):
             scene = []
             for cur_measurement in curr_measurements:
                 scene.append(cur_measurement)

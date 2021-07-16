@@ -1,19 +1,16 @@
-from mot.common.gaussian_density import GaussianDensity
+from typing import List
+
 import numpy as np
-from mot.common.state import Gaussian
+from scipy.stats import chi2
+from tqdm import tqdm as tqdm
+
 from mot.common.gaussian_density import GaussianDensity
 from mot.common.state import Gaussian
 from mot.configs import SensorModelConfig
-from mot.measurement_models import (
-    MeasurementModel,
-)
-from mot.motion_models import (
-    MotionModel,
-)
-from tqdm import tqdm as tqdm
-from scipy.stats import chi2
+from mot.measurement_models import MeasurementModel
+from mot.motion_models import MotionModel
+
 from .base_n_object_tracker import KnownObjectTracker
-from typing import List
 
 
 class GlobalNearestNeighboursTracker(KnownObjectTracker):
@@ -70,14 +67,11 @@ class GlobalNearestNeighboursTracker(KnownObjectTracker):
                 current_measurements=np.array(measurements_in_scene),
             )
             previous_states = [
-                GaussianDensity.predict(state, self.motion_model)
-                for state in estimations[timestep]
+                GaussianDensity.predict(state, self.motion_model, dt=1.0) for state in estimations[timestep]
             ]
         return tuple(estimations)
 
-    def estimation_step(
-        self, object_states: List[Gaussian], current_measurements: np.ndarray
-    ):
+    def estimation_step(self, object_states: List[Gaussian], current_measurements: np.ndarray):
         # 1) elipsoidal gating separately for each object
         num_of_measurements = current_measurements.shape[0]
         indices_of_objects_in_gate = np.zeros((self.n, num_of_measurements), dtype=bool)
@@ -103,22 +97,20 @@ class GlobalNearestNeighboursTracker(KnownObjectTracker):
         w_theta_factor = np.log(self.sensor_model.P_D / self.sensor_model.intensity_c)
         w_theta_0 = np.log(1 - self.sensor_model.P_D)  # misdetection
         for idx_object in range(self.n):
-            for idx_meas in indices_to_keep:
+            for enum_meas, idx_meas in enumerate(indices_to_keep):
                 S_i_h = (
                     self.meas_model.H(object_states[idx_object])
                     @ object_states[idx_object].P
                     @ self.meas_model.H(object_states[idx_object]).T
                 )
-                z_bar_i_h = self.meas_model.h(object_states[idx_object])
+                z_bar_i_h = self.meas_model.h(object_states[idx_object].x)
                 vec_diff = current_measurements[idx_meas] - z_bar_i_h
                 mahl = 0.5 * vec_diff @ np.linalg.inv(S_i_h) @ vec_diff.T
                 factor = 0.5 * np.log(np.linalg.det(2 * np.pi * S_i_h))
                 cost = mahl + factor - w_theta_factor
 
-                cost_matrix[idx_object, idx_meas] = cost
-            cost_matrix[
-                idx_object, num_of_filtered_measurements + idx_object
-            ] = w_theta_0
+                cost_matrix[idx_object, enum_meas] = cost
+            cost_matrix[idx_object, num_of_filtered_measurements + idx_object] = w_theta_0
 
         # 4) find best assignment using a 2D assignment solver
 

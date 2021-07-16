@@ -1,6 +1,7 @@
 import numpy as np
+
 from mot.common.state import Gaussian
-from .base_motion_model import MotionModel
+from mot.motion_models import MotionModel
 
 
 class CoordinateTurnMotionModel(MotionModel):
@@ -33,15 +34,10 @@ class CoordinateTurnMotionModel(MotionModel):
 
     def __repr__(self) -> str:
         return self.__class__.__name__ + (
-            f"(d={self.d}, "
-            f"dt={self.dt}, "
-            f"sigma_V={self.sigma_V}, "
-            f"sigma_omega={self.sigma_omega}, "
+            f"(d={self.d}, " f"dt={self.dt}, " f"sigma_V={self.sigma_V}, " f"sigma_omega={self.sigma_omega}, "
         )
 
-    def move(
-        self, state: Gaussian, dt: float = None, if_noisy: bool = False
-    ) -> Gaussian:
+    def move(self, state: Gaussian, dt: float = None, if_noisy: bool = False) -> Gaussian:
         dt = self.dt if dt is None else dt
         assert isinstance(dt, float)
         assert isinstance(state, Gaussian), f"Argument of wrong type! Type ={type}"
@@ -64,9 +60,7 @@ class CoordinateTurnMotionModel(MotionModel):
     def f(self, state_vector, dt):
         # TODO assert on state
         pos_x, pos_y, v, phi, omega = state_vector
-        next_state = np.array(
-            [dt * v * np.cos(phi), dt * v * np.sin(phi), 0, dt * omega, 0]
-        )
+        next_state = np.array([dt * v * np.cos(phi), dt * v * np.sin(phi), 0, dt * omega, 0])
         return state_vector + next_state
 
     def F(self, state_vector, dt):
@@ -86,14 +80,8 @@ class CoordinateTurnMotionModel(MotionModel):
 
         next_state = np.array(
             [
-                pos_x
-                + ((2 * v) / omega)
-                * np.sin(omega * dt / 2)
-                * np.cos(phi + omega * dt / 2),
-                pos_y
-                + ((2 * v) / omega)
-                * np.sin(omega * dt / 2)
-                * np.sin(phi + omega * dt / 2),
+                pos_x + ((2 * v) / omega) * np.sin(omega * dt / 2) * np.cos(phi + omega * dt / 2),
+                pos_y + ((2 * v) / omega) * np.sin(omega * dt / 2) * np.sin(phi + omega * dt / 2),
                 v,
                 phi + omega * dt,
                 omega,

@@ -131,6 +131,7 @@ dmypy.json
 # Images
 .images
 *.png
+*.gif
 
 # VScode
 .vscode
@@ -138,3 +139,14 @@ dmypy.json
 
 tests/SOT/.DS_Store
 .DS_Store
+
+# dataset
+data/*
+*.json
+
+# profilers metadata
+*.profile
+
+# results
+*.csv
+*.pdf

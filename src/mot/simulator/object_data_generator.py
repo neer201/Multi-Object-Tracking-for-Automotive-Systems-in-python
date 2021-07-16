@@ -1,5 +1,5 @@
-from mot.configs import GroundTruthConfig
-from mot.motion_models import MotionModel
+from ..configs.ground_truth_config import GroundTruthConfig
+from ..motion_models import MotionModel
 
 
 class ObjectData:
@@ -38,9 +38,7 @@ class ObjectData:
         return self.objects_state_data[key]
 
     def generate_objects_data(self):
-        object_state_history = [
-            {} for timestep in range(self._ground_truth_config.total_time)
-        ]
+        object_state_history = [{} for timestep in range(self._ground_truth_config.total_time)]
         for object_config in self._ground_truth_config.object_configs:
             state = object_config.initial_state
             for timestep in range(self._ground_truth_config.total_time):

@@ -1,2 +1,4 @@
-from .object_data_generator import ObjectData
-from .measurement_data_generator import MeasurementData
+# flake8: noqa
+
+from mot.simulator.measurement_data_generator import MeasurementData
+from mot.simulator.object_data_generator import ObjectData

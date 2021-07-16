@@ -30,8 +30,6 @@ def normalize_log_weights(log_weights: List[float]):
         log_weights = np.array(log_weights)
         arg_order = np.argsort(log_weights)  # ascending orgder
         log_sum_w = log_weights[arg_order[-1]]
-        log_sum_w += np.log(
-            1 + np.sum(np.exp(log_weights[arg_order[:-1]] - log_weights[arg_order[-1]]))
-        )
+        log_sum_w += np.log(1 + np.sum(np.exp(log_weights[arg_order[:-1]] - log_weights[arg_order[-1]])))
         normalized_log_weights = (log_weights - log_sum_w).tolist()
     return normalized_log_weights, log_sum_w
